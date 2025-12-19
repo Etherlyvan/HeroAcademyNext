@@ -48,14 +48,15 @@ async function getClassContents(classId: string, teacherId: string) {
   return { classData, contents };
 }
 
-export default async function ClassContentsPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function ClassContentsPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   await requireTeacher();
   const session = await auth();
-  const { classData, contents } = await getClassContents(params.id, session!.user.id);
+  const { id } = await params;
+  const { classData, contents } = await getClassContents(id, session!.user.id);
 
   const getContentTypeIcon = (type: string) => {
     switch (type) {
@@ -91,7 +92,7 @@ export default async function ClassContentsPage({
     <div className="space-y-6 animate-fade-in-up">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href={`/teacher/classes/${params.id}`}>
+        <Link href={`/teacher/classes/${id}`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Kembali ke Detail Kelas
@@ -109,7 +110,7 @@ export default async function ClassContentsPage({
                 Kelola semua materi pembelajaran untuk kelas ini
               </CardDescription>
             </div>
-            <Link href={`/teacher/classes/${params.id}/contents/new`}>
+            <Link href={`/teacher/classes/${id}/contents/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
                 Tambah Materi Baru
@@ -203,7 +204,7 @@ export default async function ClassContentsPage({
                       <Download className="h-3 w-3" />
                       Download
                     </Button>
-                    <Link href={`/teacher/classes/${params.id}/contents/${content.id}/edit`}>
+                    <Link href={`/teacher/classes/${id}/contents/${content.id}/edit`}>
                       <Button variant="ghost" size="sm" className="gap-1">
                         <Edit className="h-3 w-3" />
                         Edit
@@ -234,7 +235,7 @@ export default async function ClassContentsPage({
               Mulai dengan menambahkan materi pembelajaran pertama untuk kelas ini. 
               Anda bisa upload video, PDF, PowerPoint, atau dokumen lainnya.
             </p>
-            <Link href={`/teacher/classes/${params.id}/contents/new`}>
+            <Link href={`/teacher/classes/${id}/contents/new`}>
               <Button size="lg" className="gap-2">
                 <Plus className="h-5 w-5" />
                 Tambah Materi Pertama

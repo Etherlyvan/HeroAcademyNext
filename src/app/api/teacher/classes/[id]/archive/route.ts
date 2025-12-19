@@ -10,7 +10,7 @@ const archiveSchema = z.object({
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -22,9 +22,10 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const classData = await prisma.class.findFirst({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -40,7 +41,7 @@ export async function POST(
     const { status } = archiveSchema.parse(body);
 
     const updatedClass = await prisma.class.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
     });
 

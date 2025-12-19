@@ -98,14 +98,15 @@ async function getClassDetail(classId: string, teacherId: string) {
   return classData;
 }
 
-export default async function ClassDetailPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function ClassDetailPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   await requireTeacher();
   const session = await auth();
-  const classData = await getClassDetail(params.id, session!.user.id);
+  const { id } = await params;
+  const classData = await getClassDetail(id, session!.user.id);
 
   const getStatusBadge = (status: string) => {
     const badges = {

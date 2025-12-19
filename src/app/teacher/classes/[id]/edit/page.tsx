@@ -20,14 +20,15 @@ async function getClass(classId: string, teacherId: string) {
   return classData;
 }
 
-export default async function EditClassPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function EditClassPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   await requireTeacher();
   const session = await auth();
-  const classData = await getClass(params.id, session!.user.id);
+  const { id } = await params;
+  const classData = await getClass(id, session!.user.id);
 
   return (
     <div className="space-y-6 animate-fade-in-up max-w-4xl mx-auto">

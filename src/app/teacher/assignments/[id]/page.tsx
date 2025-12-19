@@ -61,14 +61,15 @@ async function getAssignmentDetail(assignmentId: string, teacherId: string) {
   return assignment;
 }
 
-export default async function AssignmentDetailPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function AssignmentDetailPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   await requireTeacher();
   const session = await auth();
-  const assignment = await getAssignmentDetail(params.id, session!.user.id);
+  const { id } = await params;
+  const assignment = await getAssignmentDetail(id, session!.user.id);
 
   const getSubmissionStatusBadge = (status: string) => {
     const badges = {

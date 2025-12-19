@@ -14,7 +14,7 @@ const contentSchema = z.object({
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -27,9 +27,10 @@ export async function POST(
     }
 
     // Verifikasi bahwa kelas ini milik guru yang login
+    const { id } = await params;
     const classData = await prisma.class.findFirst({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -47,7 +48,7 @@ export async function POST(
     const newContent = await prisma.classContent.create({
       data: {
         ...validatedData,
-        classId: params.id,
+        classId: id,
       },
     });
 
@@ -74,7 +75,7 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -86,9 +87,10 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const contents = await prisma.classContent.findMany({
       where: {
-        classId: params.id,
+        classId: id,
         class: {
           teacherId: session.user.id,
         },

@@ -14,7 +14,7 @@ const contentSchema = z.object({
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string; contentId: string } }
+  { params }: { params: Promise<{ id: string; contentId: string }> }
 ) {
   try {
     const session = await auth();
@@ -26,10 +26,11 @@ export async function PUT(
       );
     }
 
+    const { id, contentId } = await params;
     const content = await prisma.classContent.findFirst({
       where: {
-        id: params.contentId,
-        classId: params.id,
+        id: contentId,
+        classId: id,
         class: {
           teacherId: session.user.id,
         },
@@ -47,7 +48,7 @@ export async function PUT(
     const validatedData = contentSchema.parse(body);
 
     const updatedContent = await prisma.classContent.update({
-      where: { id: params.contentId },
+      where: { id: contentId },
       data: validatedData,
     });
 
@@ -74,7 +75,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string; contentId: string } }
+  { params }: { params: Promise<{ id: string; contentId: string }> }
 ) {
   try {
     const session = await auth();
@@ -86,10 +87,11 @@ export async function DELETE(
       );
     }
 
+    const { id, contentId } = await params;
     const content = await prisma.classContent.findFirst({
       where: {
-        id: params.contentId,
-        classId: params.id,
+        id: contentId,
+        classId: id,
         class: {
           teacherId: session.user.id,
         },
@@ -104,7 +106,7 @@ export async function DELETE(
     }
 
     await prisma.classContent.delete({
-      where: { id: params.contentId },
+      where: { id: contentId },
     });
 
     return NextResponse.json({ 

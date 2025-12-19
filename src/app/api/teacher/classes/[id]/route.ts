@@ -13,7 +13,7 @@ const classSchema = z.object({
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -25,9 +25,10 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const classData = await prisma.class.findFirst({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -43,7 +44,7 @@ export async function PUT(
     const validatedData = classSchema.parse(body);
 
     const updatedClass = await prisma.class.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...validatedData,
         thumbnail: validatedData.thumbnail || null,
@@ -70,7 +71,7 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -82,9 +83,10 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const classData = await prisma.class.findFirst({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -97,7 +99,7 @@ export async function DELETE(
     }
 
     await prisma.class.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Kelas berhasil dihapus" });

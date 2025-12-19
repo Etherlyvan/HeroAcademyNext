@@ -112,14 +112,15 @@ async function getStudentDetail(studentId: string, teacherId: string) {
   };
 }
 
-export default async function StudentDetailPage({ 
-  params 
-}: { 
-  params: { id: string } 
+export default async function StudentDetailPage({
+  params
+}: {
+  params: Promise<{ id: string }>
 }) {
   await requireTeacher();
   const session = await auth();
-  const { student, studentClasses, assignments } = await getStudentDetail(params.id, session!.user.id);
+  const { id } = await params;
+  const { student, studentClasses, assignments } = await getStudentDetail(id, session!.user.id);
 
   const getSubmissionStats = () => {
     const total = assignments.length;

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -17,8 +17,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const updatedClass = await prisma.class.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         approvalStatus: "APPROVED",
       },
